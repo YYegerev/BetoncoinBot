@@ -27,7 +27,7 @@ except ImportError:
     YANDEX_GEOCODER_API_KEY = os.environ["YANDEX_GEOCODER_API_KEY"]
     PLANT_LAT = float(os.environ["PLANT_LAT"])
     PLANT_LON = float(os.environ["PLANT_LON"])
-    BASE_DELIVERY_PRICE = float(os.environ.get("BASE_DELIVERY_PRICE", 200))
+    BASE_DELIVERY_PRICE = float(os.environ.get("BASE_DELIVERY_PRICE", 300))
     PRICE_PER_KM = float(os.environ.get("PRICE_PER_KM", 30))
     PLANT_ADDRESS = os.environ.get("PLANT_ADDRESS", "Шушары, Паровозная дорога д.28")
     CONCRETE_PRICES = {
@@ -72,7 +72,7 @@ async def get_coords(address: str):
         connector = aiohttp.TCPConnector(ssl=False)
         async with aiohttp.ClientSession(connector=connector) as session:
             async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                if resp.status != 200:
+                if resp.status != 300:
                     return None
                 data = await resp.json()
                 members = data["response"]["GeoObjectCollection"]["featureMember"]
@@ -247,7 +247,7 @@ async def process_volume(message: types.Message, state: FSMContext):
     await state.set_state(OrderForm.entering_address)
     await message.answer(
         f"✅ Объём: <b>{volume} м³</b>\n\n{step}: Введите адрес доставки\n"
-        f"<i>Пример: г. Санкт-Петербург, Смольный пр.1</i>\n\n📍 Завод: {PLANT_ADDRESS}",
+        f"<i>Пример: Санкт-Петербург, Смольный пр.1</i>\n\n📍 Завод: {PLANT_ADDRESS}",
         parse_mode="HTML"
     )
 
@@ -267,7 +267,7 @@ async def process_address(message: types.Message, state: FSMContext):
         await message.answer(
             "⚠️ Не удалось определить адрес по Яндекс Картам.\n"
             "Уточните: укажите город, улицу и номер дома.\n"
-            "<i>Пример: г. Санкт-Петербург, Смольный пр.1</i>",
+            "<i>Пример: Санкт-Петербург, Смольный пр.1</i>",
             parse_mode="HTML"
         )
         return
@@ -314,7 +314,7 @@ async def process_date(message: types.Message, state: FSMContext):
     await state.update_data(datetime=message.text.strip())
     await state.set_state(OrderForm.entering_phone)
     await message.answer(
-        f"✅ Дата: <b>{message.text.strip()}</b>\n\nВведите контактный номер телефона\n<i>Например: +7 999 123-45-67</i>",
+        f"✅ Дата: <b>{message.text.strip()}</b>\n\nВведите контактный номер телефона\n<i>Например: +79991234567</i>",
         parse_mode="HTML"
     )
 

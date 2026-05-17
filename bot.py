@@ -77,16 +77,28 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 def calculate_cost(mark, volume, distance):
     price = CONCRETE_PRICES.get(mark, 0)
     concrete_total = price * volume
-    delivery_cost = BASE_DELIVERY_PRICE + PRICE_PER_KM * distance
+
+    # Минимальный объём для расчёта доставки — 8 м³
+    billing_volume = max(volume, 8.0)
+
+    # Цена доставки за 1 м³ = 30₽/км × расстояние + 200₽ выезд
+    delivery_per_m3 = PRICE_PER_KM * distance + BASE_DELIVERY_PRICE
+    delivery_cost = delivery_per_m3 * billing_volume
+
     return {
         "concrete_price_per_m3": price,
         "concrete_total": concrete_total,
+        "delivery_per_m3": delivery_per_m3,
+        "billing_volume": billing_volume,
         "delivery_cost": delivery_cost,
         "total": concrete_total + delivery_cost,
     }
 
 
 def format_order_summary(data, costs):
+    billing_note = ""
+    if costs['billing_volume'] > data['volume']:
+        billing_note = f" (мин. 8 м³ для расчёта доставки)"
     return (
         f"📦 <b>Сводка заказа</b>\n\n"
         f"🔹 Марка бетона: <b>{data['concrete_mark']}</b>\n"
@@ -97,7 +109,7 @@ def format_order_summary(data, costs):
         f"🔹 Телефон: <b>{data['phone']}</b>\n\n"
         f"💰 <b>Расчёт стоимости:</b>\n"
         f"   • Бетон: {costs['concrete_price_per_m3']:,.0f} ₽/м³ × {data['volume']} м³ = <b>{costs['concrete_total']:,.0f} ₽</b>\n"
-        f"   • Доставка ({data['distance']} км): <b>{costs['delivery_cost']:,.0f} ₽</b>\n"
+        f"   • Доставка: (30₽ × {data['distance']} км + 200₽) × {costs['billing_volume']:.0f} м³{billing_note} = <b>{costs['delivery_cost']:,.0f} ₽</b>\n"
         f"   • <b>ИТОГО: {costs['total']:,.0f} ₽</b>\n\n"
         f"📍 Отгрузка с завода: {PLANT_ADDRESS}"
     )

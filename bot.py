@@ -5,6 +5,7 @@ Telegram-бот для заказа бетона
 
 import logging
 import math
+import os
 import aiohttp
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
@@ -14,11 +15,32 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 import asyncio
 
-from config import (
-    BOT_TOKEN, MANAGER_CHAT_ID, PLANT_ADDRESS,
-    PLANT_LAT, PLANT_LON, PRICE_PER_KM, BASE_DELIVERY_PRICE,
-    CONCRETE_PRICES, YANDEX_GEOCODER_API_KEY
-)
+try:
+    from config import (
+        BOT_TOKEN, MANAGER_CHAT_ID, PLANT_ADDRESS,
+        PLANT_LAT, PLANT_LON, PRICE_PER_KM, BASE_DELIVERY_PRICE,
+        CONCRETE_PRICES, YANDEX_GEOCODER_API_KEY
+    )
+except ImportError:
+    BOT_TOKEN = os.environ["BOT_TOKEN"]
+    MANAGER_CHAT_ID = int(os.environ["MANAGER_CHAT_ID"])
+    YANDEX_GEOCODER_API_KEY = os.environ["YANDEX_GEOCODER_API_KEY"]
+    PLANT_LAT = float(os.environ["PLANT_LAT"])
+    PLANT_LON = float(os.environ["PLANT_LON"])
+    BASE_DELIVERY_PRICE = float(os.environ.get("BASE_DELIVERY_PRICE", 200))
+    PRICE_PER_KM = float(os.environ.get("PRICE_PER_KM", 30))
+    PLANT_ADDRESS = os.environ.get("PLANT_ADDRESS", "Шушары, Паровозная дорога д.28")
+    CONCRETE_PRICES = {
+        "М100 (В7.5)":  3800,
+        "М150 (В12.5)": 4100,
+        "М200 (В15)":   4500,
+        "М250 (В20)":   4900,
+        "М300 (В22.5)": 5300,
+        "М350 (В25)":   5700,
+        "М400 (В30)":   6200,
+        "М450 (В35)":   6800,
+        "М500 (В40)":   7500,
+    }
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

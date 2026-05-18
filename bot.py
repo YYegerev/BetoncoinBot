@@ -371,7 +371,10 @@ async def edit_order(message: types.Message, state: FSMContext):
 
 async def main():
     logger.info("Бот запущен...")
+    await bot.delete_webhook(drop_pending_updates=True)
+    await asyncio.sleep(2)
     await dp.start_polling(bot)
+
 
 
 if __name__ == "__main__":

@@ -60,30 +60,28 @@ class OrderForm(StatesGroup):
 
 
 async def get_coords(address: str):
-    url = "https://geocode-maps.yandex.ru/1.x/"
+    url = "https://nominatim.openstreetmap.org/search"
     params = {
-        "apikey": YANDEX_GEOCODER_API_KEY,
-        "geocode": address,
+        "q": address,
         "format": "json",
-        "results": 1,
-        "lang": "ru_RU",
+        "limit": 1,
+        "countrycodes": "ru",
     }
     try:
-        connector = aiohttp.TCPConnector(ssl=False)
-        async with aiohttp.ClientSession(connector=connector) as session:
-            async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                if resp.status != 300:
+        headers = {"User-Agent": "BetoncoinBot/1.0"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, headers=headers,
+                                   timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status != 200:
                     return None
                 data = await resp.json()
-                members = data["response"]["GeoObjectCollection"]["featureMember"]
-                if not members:
+                if not data:
                     return None
-                pos = members[0]["GeoObject"]["Point"]["pos"]
-                lon_str, lat_str = pos.split()
-                return float(lat_str), float(lon_str)
+                return float(data[0]["lat"]), float(data[0]["lon"])
     except Exception as e:
         logger.error(f"Geocoder error: {e}")
         return None
+
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):

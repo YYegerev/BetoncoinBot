@@ -233,12 +233,16 @@ async def process_concrete(message: types.Message, state: FSMContext):
 @dp.message(OrderForm.entering_volume)
 async def process_volume(message: types.Message, state: FSMContext):
     try:
-        volume = float(message.text.replace(",", "."))
-        if not (0 < volume <= 500):
-            raise ValueError
-    except ValueError:
+    if not message.text:
         await message.answer("Введите корректный объём (например: 10 или 7.5).")
         return
+    volume = float(message.text.replace(",", "."))
+    if not (0 < volume <= 500):
+        raise ValueError
+except ValueError:
+    await message.answer("Введите корректный объём (например: 10 или 7.5).")
+    return
+
     await state.update_data(volume=volume)
     data = await state.get_data()
     step = "Шаг 3/4" if data["mode"] == "order" else "Шаг 3/3"

@@ -4,7 +4,7 @@
 
 # ─── Токен бота ──────────────────────────────────────────────
 # Получить у @BotFather в Telegram командой /newbot
-BOT_TOKEN = "8957349616:AAFsfNYrzmodQNPMkjKED9VpV46HFkDD9T4"
+BOT_TOKEN = "8957349616:AAGRHxMh8BYdgEwDGWeitzXPYqP531Rn7NM"
 
 # ─── ID менеджера/группы ─────────────────────────────────────
 # Личный чат: узнать свой ID через @userinfobot

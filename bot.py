@@ -129,7 +129,7 @@ def format_order_summary(data, costs):
         f"🔹 Телефон: <b>{data['phone']}</b>\n\n"
         f"💰 <b>Расчёт стоимости:</b>\n"
         f"   • Бетон: {costs['concrete_price_per_m3']:,.0f} ₽/м³ × {data['volume']} м³ = <b>{costs['concrete_total']:,.0f} ₽</b>\n"
-        f"   • Доставка: (30₽ × {data['distance']} км + 200₽) × {costs['billing_volume']:.0f} м³{billing_note} = <b>{costs['delivery_cost']:,.0f} ₽</b>\n"
+        f"   • Доставка: (30₽ × {data['distance']} км + 300₽) × {costs['billing_volume']:.0f} м³{billing_note} = <b>{costs['delivery_cost']:,.0f} ₽</b>\n"
         f"   • <b>ИТОГО: {costs['total']:,.0f} ₽</b>\n\n"
         f"📍 Отгрузка с завода: {PLANT_ADDRESS}"
     )
